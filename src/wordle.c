@@ -108,11 +108,15 @@ void handleBackspace(WINDOW *game_win) {
   chtype ch;
 
   getyx(game_win, y, x);
+  if (x <= START_COL) return;
+
   ch = winch(game_win);
-  if (ch == 0) {
-    mvwprintw(game_win, y, x - 3, " ");
+  if (ch == ' ') {
+    mvwprintw(game_win, y, x - 2, " ");
+    wmove(game_win, y, x - 2);
   } else {
-    mvwprintw(game_win, y, x - 1, " ");
+    mvwprintw(game_win, y, x, " ");
+    wmove(game_win, y, x);
   }
 }
 
