@@ -71,8 +71,7 @@ int main() {
   initscr();
   WINDOW *game_win = initBoard();
 
-  while ((ch = getch()) != KEY_F(1)) {
-
+  do {
     switch (ch) {
     case KEY_LEFT:
       handleArrows(game_win, KEY_LEFT);
@@ -89,7 +88,12 @@ int main() {
     default:
       handleLetters(game_win, ch);
     }
-  }
+
+#ifdef DEBUG
+    debugCursoryx(game_win);
+#endif
+    wrefresh(game_win);
+  } while ((ch = getch()) != KEY_F(1));
 
   delwin(game_win);
   endwin();
