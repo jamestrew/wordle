@@ -160,9 +160,15 @@ void handleEnter(WINDOW *game_win) {}
 
 void handleBackspace(WINDOW *game_win) {}
 
-void handleLetters(WINDOW *game_win, int ch) {}
+void handleLetters(WINDOW *game_win, int ch) {
+  if (ch >= 65 && ch <= 90)
+    ch -= 32;
+  if (!(ch >= 97) || !(ch <= 122))
+    return;
 
-void debugCursoryx(WINDOW *game_win) {
+  wprintw(game_win, "%c ", ch);
+}
+
   int x, y;
   getyx(game_win, y, x);
   // TODO: kinda wanna add some padding - rending kinda broken
