@@ -127,8 +127,8 @@ void handleLetters(WINDOW *game_win, chtype ch) {
 
   int x, y;
   getyx(game_win, y, x);
-  if (x == CONFIRM_START) {
-    wprintw(game_win, CONFIRM_MSG);
+  if (x == END_COL + 2) {
+    mvwprintw(game_win, y, CONFIRM_START, CONFIRM_MSG);
     wmove(game_win, y, END_COL);
   }
 }

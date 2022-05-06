@@ -17,8 +17,8 @@
 #define END_COL START_COL + (WORD_LENGTH - 1) * X_SPACING
 #define END_ROW START_ROW + (GUESS_COUNT - 1) * Y_SPACING
 
-#define CONFIRM_START END_COL + 2
-#define CONFIRM_MSG "   press <enter> to confirm"
+#define CONFIRM_START END_COL + 5
+#define CONFIRM_MSG "press <enter> to confirm"
 
 /* TODO:
    [x] get random word
