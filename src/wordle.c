@@ -33,7 +33,7 @@ int main() {
     }
 
 #ifdef DEBUG
-    debugCursoryx(game_win);
+    debugCursor(game_win, ch);
 #endif
     wrefresh(game_win);
   } while ((ch = getch()) != KEY_F(1));
@@ -112,9 +112,10 @@ void handleLetters(WINDOW *game_win, int ch) {
   wprintw(game_win, "%c ", ch);
 }
 
+void debugCursor(WINDOW *game_win, int ch) {
   int x, y;
   getyx(game_win, y, x);
   // TODO: kinda wanna add some padding - rending kinda broken
-  mvwprintw(game_win, BOARD_HEIGHT - 2, BOARD_WIDTH - 5, "%d,%d", x, y);
+  mvwprintw(game_win, BOARD_HEIGHT - 2, BOARD_WIDTH - 7, "(%c)%d,%d", ch, x, y);
   wmove(game_win, y, x);
 }
