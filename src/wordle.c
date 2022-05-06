@@ -102,22 +102,19 @@ void handleArrows(WINDOW *game_win, chtype direction) {
 void handleEnter(WINDOW *game_win) {}
 
 void handleBackspace(WINDOW *game_win) {
-  // if letter under clear under cursor
-  // else clear prev letter
   int x, y;
-  chtype ch;
 
   getyx(game_win, y, x);
   if (x <= START_COL) return;
 
-  ch = winch(game_win);
-  if (ch == ' ') {
-    mvwprintw(game_win, y, x - 2, " ");
-    wmove(game_win, y, x - 2);
-  } else {
-    mvwprintw(game_win, y, x, " ");
-    wmove(game_win, y, x);
-  }
+  if (winch(game_win) == ' ')
+    x -= 2;
+  mvwprintw(game_win, y, x, " ");
+
+  char *clearMsg = malloc(strlen(CONFIRM_MSG) + 1);
+  memset(clearMsg, ' ', strlen(CONFIRM_MSG));
+  mvwprintw(game_win, y, CONFIRM_START, "%s", clearMsg);
+  wmove(game_win, y, x);
 }
 
 void handleLetters(WINDOW *game_win, chtype ch) {
@@ -130,8 +127,8 @@ void handleLetters(WINDOW *game_win, chtype ch) {
 
   int x, y;
   getyx(game_win, y, x);
-  if (x == END_COL + 2) {
-    wprintw(game_win, "   press <enter> to confirm");
+  if (x == CONFIRM_START) {
+    wprintw(game_win, CONFIRM_MSG);
     wmove(game_win, y, END_COL);
   }
 }
