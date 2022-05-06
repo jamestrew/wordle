@@ -55,10 +55,10 @@
 
 void getPlayWord(char *playWord);
 WINDOW *initBoard();
-void handleArrows(WINDOW *game_win, int direction);
+void handleArrows(WINDOW *game_win, chtype direction);
 void handleEnter(WINDOW *game_win);
 void handleBackspace(WINDOW *game_win);
-void handleLetters(WINDOW *game_win, int ch);
-void debugCursor(WINDOW *game_win, int ch);
+void handleLetters(WINDOW *game_win, chtype ch);
+void debugCursor(WINDOW *game_win, chtype ch);
 
 #endif

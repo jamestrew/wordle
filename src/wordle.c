@@ -8,7 +8,7 @@
 
 int main() {
   char playWord[WORD_LENGTH + 2]; // newline and null
-  int ch;
+  chtype ch;
   getPlayWord(playWord);
 
   initscr();
@@ -89,7 +89,7 @@ WINDOW *initBoard() {
   return local_win;
 }
 
-void handleArrows(WINDOW *game_win, int direction) {
+void handleArrows(WINDOW *game_win, chtype direction) {
   int x, y;
   getyx(game_win, y, x);
 
@@ -103,7 +103,7 @@ void handleEnter(WINDOW *game_win) {}
 
 void handleBackspace(WINDOW *game_win) {}
 
-void handleLetters(WINDOW *game_win, int ch) {
+void handleLetters(WINDOW *game_win, chtype ch) {
   if (ch >= 65 && ch <= 90) // A-Z
     ch -= 32;
   if (!(ch >= 97) || !(ch <= 122)) // not a-z
@@ -119,7 +119,7 @@ void handleLetters(WINDOW *game_win, int ch) {
   }
 }
 
-void debugCursor(WINDOW *game_win, int ch) {
+void debugCursor(WINDOW *game_win, chtype ch) {
   int x, y;
   getyx(game_win, y, x);
   // TODO: kinda wanna add some padding - rending kinda broken
