@@ -7,8 +7,17 @@
 #define WORD_COUNT 659
 #define WORD_LENGTH 5
 
+#define GUESS_COUNT 6
+#define X_SPACING 2
+#define Y_SPACING 2
+
 #define BOARD_HEIGHT 25
 #define BOARD_WIDTH 42
+
+#define START_COL 3
+#define START_ROW 3
+#define END_COL START_COL + (WORD_LENGTH - 1) * X_SPACING
+#define END_ROW START_ROW + (GUESS_COUNT - 1) * Y_SPACING
 
 /* TODO:
    [x] get random word
@@ -25,9 +34,9 @@
    - black bg
     ┌───────────────────────────────────────┐
     │                                       │
-    │ ENTER GUESS:                          │
+    │ENTER GUESS:                           │
     │                                       │
-    │ > A A A A A   press enter to confirm  │
+    │> A A A A A   press enter to confirm   │
     │                                       │
     │                                       │
     │                                       │
@@ -52,7 +61,7 @@ void handleArrows(WINDOW *game_win, int direction);
 void handleEnter(WINDOW *game_win);
 void handleBackspace(WINDOW *game_win);
 void handleLetters(WINDOW *game_win, int ch);
-int playRound(int roundNumber, const char *const playWord);
+void debugCursoryx(WINDOW *game_win);
 
 int main() {
   char playWord[WORD_LENGTH + 2]; // newline and null
@@ -128,7 +137,31 @@ WINDOW *initBoard() {
   mvwprintw(local_win, BOARD_HEIGHT - 2, 1, "Press F1 to quit");
   wattroff(local_win, COLOR_PAIR(2));
 
-  mvwprintw(local_win, START_ROW, START_COL, "> ");
+  mvwprintw(local_win, START_ROW, START_COL - 2, "> ");
   wrefresh(local_win);
   return local_win;
+}
+
+void handleArrows(WINDOW *game_win, int direction) {
+  int x, y;
+  getyx(game_win, y, x);
+
+  if (direction == KEY_RIGHT && x < END_COL)
+    wmove(game_win, y, x + 2);
+  else if (direction == KEY_LEFT && x > START_COL)
+    wmove(game_win, y, x - 2);
+}
+
+void handleEnter(WINDOW *game_win) {}
+
+void handleBackspace(WINDOW *game_win) {}
+
+void handleLetters(WINDOW *game_win, int ch) {}
+
+void debugCursoryx(WINDOW *game_win) {
+  int x, y;
+  getyx(game_win, y, x);
+  // TODO: kinda wanna add some padding - rending kinda broken
+  mvwprintw(game_win, BOARD_HEIGHT - 2, BOARD_WIDTH - 5, "%d,%d", x, y);
+  wmove(game_win, y, x);
 }
