@@ -104,12 +104,19 @@ void handleEnter(WINDOW *game_win) {}
 void handleBackspace(WINDOW *game_win) {}
 
 void handleLetters(WINDOW *game_win, int ch) {
-  if (ch >= 65 && ch <= 90)
+  if (ch >= 65 && ch <= 90) // A-Z
     ch -= 32;
-  if (!(ch >= 97) || !(ch <= 122))
+  if (!(ch >= 97) || !(ch <= 122)) // not a-z
     return;
 
   wprintw(game_win, "%c ", ch);
+
+  int x, y;
+  getyx(game_win, y, x);
+  if (x == END_COL + 2) {
+    wprintw(game_win, "   press <enter> to confirm");
+    wmove(game_win, y, END_COL);
+  }
 }
 
 void debugCursor(WINDOW *game_win, int ch) {
