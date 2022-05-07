@@ -94,23 +94,21 @@ void handleArrows(WINDOW *game_win, chtype direction) {
   getyx(game_win, y, x);
 
   if (direction == KEY_RIGHT && x < END_COL)
-    wmove(game_win, y, x + 2);
+    wmove(game_win, y, x + X_SPACING);
   else if (direction == KEY_LEFT && x > START_COL)
-    wmove(game_win, y, x - 2);
+    wmove(game_win, y, x - X_SPACING);
 }
 
 void handleEnter(WINDOW *game_win) {
   int x, y;
   chtype ch;
   getyx(game_win, y, x);
-  mvwprintw(game_win, BOARD_HEIGHT - 3, 0, "stuff: %c", mvwinch(game_win, y, CONFIRM_START));
   if (mvwinch(game_win, y, CONFIRM_START) != 'p')
     return;
   if (y == END_ROW) {
     gameEnd(game_win); // TODO
     return;
   }
-  printf("entered");
   colorLetters(game_win); // TODO
   clearConfirmMsg(game_win, y);
   mvwprintw(game_win, y, POINTER_COL, " ");
@@ -126,7 +124,7 @@ void handleBackspace(WINDOW *game_win) {
     return;
 
   if (winch(game_win) == ' ')
-    x -= 2;
+    x -= X_SPACING;
   mvwprintw(game_win, y, x, " ");
   clearConfirmMsg(game_win, y);
   wmove(game_win, y, x);
@@ -142,7 +140,7 @@ void handleLetters(WINDOW *game_win, chtype ch) {
 
   int x, y;
   getyx(game_win, y, x);
-  if (x == END_COL + 2) {
+  if (x == END_COL + X_SPACING) {
     mvwprintw(game_win, y, CONFIRM_START, CONFIRM_MSG);
     wmove(game_win, y, END_COL);
   }
