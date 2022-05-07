@@ -59,11 +59,10 @@ void getPlayWord(char words[WORD_COUNT][WORD_LENGTH + 1], char *playWord) {
   while (fgets(word, WORD_LENGTH + 2, fp) != NULL || line <= WORD_COUNT) {
     word[WORD_LENGTH] = '\0';
     strcpy(words[line], word);
-    if (line == wordLine)
-      strcpy(playWord, word);
     line++;
   }
   fclose(fp);
+  strcpy(playWord, words[wordLine]);
 }
 
 WINDOW *initBoard() {
