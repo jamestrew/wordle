@@ -25,7 +25,7 @@ int main() {
     case KEY_BACKSPACE:
       handleBackspace(game_win);
       break;
-    case KEY_ENTER:
+    case 10:
       handleEnter(game_win);
       break;
     default:
@@ -68,7 +68,6 @@ WINDOW *initBoard() {
   keypad(stdscr, TRUE);
   start_color();
   cbreak();
-  // curs_set(0);
   init_pair(1, COLOR_CYAN, COLOR_BLACK);
   init_pair(2, COLOR_RED, COLOR_BLACK);
   refresh();
@@ -84,7 +83,8 @@ WINDOW *initBoard() {
   mvwprintw(local_win, BOARD_HEIGHT - 2, 1, "Press F1 to quit");
   wattroff(local_win, COLOR_PAIR(2));
 
-  mvwprintw(local_win, START_ROW, START_COL - 2, "> ");
+  mvwprintw(local_win, START_ROW, POINTER_COL, POINTER);
+  wmove(local_win, START_ROW, START_COL);
   wrefresh(local_win);
   return local_win;
 }
@@ -99,21 +99,36 @@ void handleArrows(WINDOW *game_win, chtype direction) {
     wmove(game_win, y, x - 2);
 }
 
-void handleEnter(WINDOW *game_win) {}
+void handleEnter(WINDOW *game_win) {
+  int x, y;
+  chtype ch;
+  getyx(game_win, y, x);
+  mvwprintw(game_win, BOARD_HEIGHT - 3, 0, "stuff: %c", mvwinch(game_win, y, CONFIRM_START));
+  if (mvwinch(game_win, y, CONFIRM_START) != 'p')
+    return;
+  if (y == END_ROW) {
+    gameEnd(game_win); // TODO
+    return;
+  }
+  printf("entered");
+  colorLetters(game_win); // TODO
+  clearConfirmMsg(game_win, y);
+  mvwprintw(game_win, y, POINTER_COL, " ");
+  mvwprintw(game_win, y + Y_SPACING, POINTER_COL, POINTER);
+  wmove(game_win, y + Y_SPACING, START_COL);
+}
 
 void handleBackspace(WINDOW *game_win) {
   int x, y;
 
   getyx(game_win, y, x);
-  if (x <= START_COL) return;
+  if (x <= START_COL)
+    return;
 
   if (winch(game_win) == ' ')
     x -= 2;
   mvwprintw(game_win, y, x, " ");
-
-  char *clearMsg = malloc(strlen(CONFIRM_MSG) + 1);
-  memset(clearMsg, ' ', strlen(CONFIRM_MSG));
-  mvwprintw(game_win, y, CONFIRM_START, "%s", clearMsg);
+  clearConfirmMsg(game_win, y);
   wmove(game_win, y, x);
 }
 
@@ -132,6 +147,16 @@ void handleLetters(WINDOW *game_win, chtype ch) {
     wmove(game_win, y, END_COL);
   }
 }
+
+void clearConfirmMsg(WINDOW *game_win, int y) {
+  char *clearMsg = malloc(strlen(CONFIRM_MSG) + 1);
+  memset(clearMsg, ' ', strlen(CONFIRM_MSG));
+  mvwprintw(game_win, y, CONFIRM_START, "%s", clearMsg);
+  free(clearMsg);
+}
+
+void colorLetters(WINDOW *game_win) {}
+void gameEnd(WINDOW *game_win) {}
 
 void debugCursor(WINDOW *game_win, chtype ch) {
   int x, y;

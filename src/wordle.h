@@ -14,6 +14,8 @@
 
 #define START_COL 3
 #define START_ROW 3
+#define POINTER_COL START_COL - 2
+#define POINTER ">"
 #define END_COL START_COL + (WORD_LENGTH - 1) * X_SPACING
 #define END_ROW START_ROW + (GUESS_COUNT - 1) * Y_SPACING
 
@@ -22,8 +24,8 @@
 
 /* TODO:
    [x] get random word
-   [ ] create basic play board
-   [ ] create input handling
+   [x] create basic play board
+   [x] create input handling
    [ ] do the letter coloring
    [ ] do the wordle colorful thing
 
@@ -64,9 +66,11 @@ void handleArrows(WINDOW *game_win, chtype direction);
 void handleEnter(WINDOW *game_win);
 void handleBackspace(WINDOW *game_win);
 void handleLetters(WINDOW *game_win, chtype ch);
+void clearConfirmMsg(WINDOW *game_win, int y);
 
 // wordle logic
 void colorLetters(WINDOW *game_win);
+void gameEnd(WINDOW *game_win);
 
 // dev tools
 void debugCursor(WINDOW *game_win, chtype ch);
