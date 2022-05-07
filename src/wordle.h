@@ -70,13 +70,13 @@ WINDOW *initBoard();
 
 // input handlers
 void handleArrows(WINDOW *game_win, chtype direction);
-void handleEnter(WINDOW *game_win);
+void handleEnter(WINDOW *game_win, char *playWord);
 void handleBackspace(WINDOW *game_win);
 void handleLetters(WINDOW *game_win, chtype ch);
 void clearConfirmMsg(WINDOW *game_win, int y);
 
 // wordle logic
-void colorLetters(WINDOW *game_win);
+void colorLetters(WINDOW *game_win, char *playWord);
 void gameEnd(WINDOW *game_win);
 
 // dev tools

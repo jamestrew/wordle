@@ -26,7 +26,7 @@ int main() {
       handleBackspace(game_win);
       break;
     case 10:
-      handleEnter(game_win);
+      handleEnter(game_win, playWord);
       break;
     default:
       handleLetters(game_win, ch);
@@ -103,7 +103,7 @@ void handleArrows(WINDOW *game_win, chtype direction) {
     wmove(game_win, y, x - X_SPACING);
 }
 
-void handleEnter(WINDOW *game_win) {
+void handleEnter(WINDOW *game_win, char *playWord) {
   int x, y;
   chtype ch;
   getyx(game_win, y, x);
@@ -113,7 +113,7 @@ void handleEnter(WINDOW *game_win) {
     gameEnd(game_win); // TODO
     return;
   }
-  colorLetters(game_win); // TODO
+  colorLetters(game_win, playWord);
   clearConfirmMsg(game_win, y);
   mvwprintw(game_win, y, POINTER_COL, " ");
   mvwprintw(game_win, y + Y_SPACING, POINTER_COL, POINTER);
@@ -157,7 +157,41 @@ void clearConfirmMsg(WINDOW *game_win, int y) {
   free(clearMsg);
 }
 
-void colorLetters(WINDOW *game_win) {}
+void colorLetters(WINDOW *game_win, char *playWord) {
+  // need the playWord
+  // get typed word
+  // reject non-valid word (do last)
+  // color letters accordingly
+  int x, y;
+  getyx(game_win, y, x);
+
+  char letters[WORD_LENGTH + 1];
+  strcpy(letters, playWord);
+
+  for (int col = START_COL, idx = 0; col <= END_COL; col += 2, idx++) {
+    chtype ch = mvwinch(game_win, y, col);
+    if (playWord[idx] == ch) {
+      letters[idx] = 0;
+      wattron(game_win, COLOR_PAIR(C_CORRECT));
+      mvwprintw(game_win, y, col, "%c", ch);
+      wattroff(game_win, COLOR_PAIR(C_CORRECT));
+    }
+  }
+  for (int col = START_COL, idx = 0; col <= END_COL; col += 2, idx++) {
+    chtype ch = mvwinch(game_win, y, col);
+    if (playWord[idx] != ch) {
+      for (int i = 0; i < WORD_LENGTH; ++i) {
+        if (ch == letters[i]) {
+          letters[i] = 0;
+          wattron(game_win, COLOR_PAIR(C_CLOSE));
+          mvwprintw(game_win, y, col, "%c", ch);
+          wattroff(game_win, COLOR_PAIR(C_CLOSE));
+        }
+      }
+    }
+  }
+}
+
 void gameEnd(WINDOW *game_win) {}
 
 void debugCursor(WINDOW *game_win, chtype ch) {
