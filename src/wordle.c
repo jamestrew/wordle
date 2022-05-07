@@ -8,12 +8,12 @@
 
 int main() {
   char playWord[WORD_LENGTH + 2]; // newline and null
-  chtype ch;
   getPlayWord(playWord);
 
   initscr();
   WINDOW *game_win = initBoard();
 
+  chtype ch;
   do {
     switch (ch) {
     case KEY_LEFT:
@@ -33,7 +33,7 @@ int main() {
     }
 
 #ifdef DEBUG
-    debugCursor(game_win, ch);
+    debugCursor(game_win, ch, playWord);
 #endif
     wrefresh(game_win);
   } while ((ch = getch()) != KEY_F(1));
@@ -194,10 +194,11 @@ void colorLetters(WINDOW *game_win, char *playWord) {
 
 void gameEnd(WINDOW *game_win) {}
 
-void debugCursor(WINDOW *game_win, chtype ch) {
+void debugCursor(WINDOW *game_win, chtype ch, char *playWord) {
   int x, y;
   getyx(game_win, y, x);
   // TODO: kinda wanna add some padding - rending kinda broken
   mvwprintw(game_win, BOARD_HEIGHT - 2, BOARD_WIDTH - 7, "(%c)%d,%d", ch, x, y);
+  mvwprintw(game_win, 1, 13, " %s", playWord);
   wmove(game_win, y, x);
 }

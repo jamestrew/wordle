@@ -80,6 +80,6 @@ void colorLetters(WINDOW *game_win, char *playWord);
 void gameEnd(WINDOW *game_win);
 
 // dev tools
-void debugCursor(WINDOW *game_win, chtype ch);
+void debugCursor(WINDOW *game_win, chtype ch, char *playWord);
 
 #endif
