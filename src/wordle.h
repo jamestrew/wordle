@@ -22,6 +22,13 @@
 #define CONFIRM_START END_COL + 5
 #define CONFIRM_MSG "press <enter> to confirm"
 
+#define C_INTRO 1
+#define C_QUIT 2
+#define C_CORRECT 3
+#define C_CLOSE 4
+#define C_WRONG 5
+#define COLOR_GREY 69
+
 /* TODO:
    [x] get random word
    [x] create basic play board

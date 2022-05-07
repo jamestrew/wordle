@@ -68,20 +68,24 @@ WINDOW *initBoard() {
   keypad(stdscr, TRUE);
   start_color();
   cbreak();
-  init_pair(1, COLOR_CYAN, COLOR_BLACK);
-  init_pair(2, COLOR_RED, COLOR_BLACK);
+  init_color(COLOR_GREY, 134, 145, 137);
+  init_pair(C_INTRO, COLOR_CYAN, COLOR_BLACK);
+  init_pair(C_QUIT, COLOR_RED, COLOR_BLACK);
+  init_pair(C_CORRECT, COLOR_GREEN, COLOR_BLACK);
+  init_pair(C_CLOSE, COLOR_YELLOW, COLOR_BLACK);
+  init_pair(C_WRONG, COLOR_GREY, COLOR_BLACK);
   refresh();
 
   WINDOW *local_win = newwin(BOARD_HEIGHT, BOARD_WIDTH, 0, 0);
   box(local_win, 0, 0);
 
-  wattron(local_win, COLOR_PAIR(1));
+  wattron(local_win, COLOR_PAIR(C_INTRO));
   mvwprintw(local_win, 1, 1, "ENTER GUESS:");
-  wattroff(local_win, COLOR_PAIR(1));
+  wattroff(local_win, COLOR_PAIR(C_INTRO));
 
-  wattron(local_win, COLOR_PAIR(2));
+  wattron(local_win, COLOR_PAIR(C_QUIT));
   mvwprintw(local_win, BOARD_HEIGHT - 2, 1, "Press F1 to quit");
-  wattroff(local_win, COLOR_PAIR(2));
+  wattroff(local_win, COLOR_PAIR(C_QUIT));
 
   mvwprintw(local_win, START_ROW, POINTER_COL, POINTER);
   wmove(local_win, START_ROW, START_COL);
