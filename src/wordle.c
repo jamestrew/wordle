@@ -7,8 +7,9 @@
 #include "wordle.h"
 
 int main() {
-  char playWord[WORD_LENGTH + 2]; // newline and null
-  getPlayWord(playWord);
+  char words[WORD_COUNT][WORD_LENGTH + 1];
+  char playWord[WORD_LENGTH + 1];
+  getPlayWord(words, playWord);
 
   initscr();
   WINDOW *game_win = initBoard();
@@ -42,7 +43,7 @@ int main() {
   endwin();
 }
 
-void getPlayWord(char *playWord) {
+void getPlayWord(char words[WORD_COUNT][WORD_LENGTH + 1], char *playWord) {
   srand(time(0));
   int wordLine = rand() % WORD_COUNT;
 
@@ -54,12 +55,14 @@ void getPlayWord(char *playWord) {
   }
 
   int line = 0;
-  while (fgets(playWord, WORD_LENGTH + 2, fp) != NULL) {
-    if (line >= wordLine)
-      break;
+  char word[WORD_LENGTH + 2];
+  while (fgets(word, WORD_LENGTH + 2, fp) != NULL || line <= WORD_COUNT) {
+    word[WORD_LENGTH] = '\0';
+    strcpy(words[line], word);
+    if (line == wordLine)
+      strcpy(playWord, word);
     line++;
   }
-  playWord[WORD_LENGTH] = '\0';
   fclose(fp);
 }
 

@@ -65,7 +65,7 @@
     └───────────────────────────────────────┘
 */
 
-void getPlayWord(char *playWord);
+void getPlayWord(char words[WORD_COUNT][WORD_LENGTH + 1], char *playWord);
 WINDOW *initBoard();
 
 // input handlers
