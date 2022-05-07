@@ -1,4 +1,5 @@
 #include <ncurses.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,8 +8,8 @@
 #include "wordle.h"
 
 int main() {
-  char words[WORD_COUNT][WORD_LENGTH + 1];
-  char playWord[WORD_LENGTH + 1];
+  char words[WORD_COUNT][S_WORD_LEN];
+  char playWord[S_WORD_LEN];
   getPlayWord(words, playWord);
 
   initscr();
@@ -27,7 +28,7 @@ int main() {
       handleBackspace(game_win);
       break;
     case 10:
-      handleEnter(game_win, playWord);
+      handleEnter(game_win, playWord, words);
       break;
     default:
       handleLetters(game_win, ch);
@@ -43,7 +44,7 @@ int main() {
   endwin();
 }
 
-void getPlayWord(char words[WORD_COUNT][WORD_LENGTH + 1], char *playWord) {
+void getPlayWord(char words[][S_WORD_LEN], char *playWord) {
   srand(time(0));
   int wordLine = rand() % WORD_COUNT;
 
@@ -105,7 +106,7 @@ void handleArrows(WINDOW *game_win, chtype direction) {
     wmove(game_win, y, x - X_SPACING);
 }
 
-void handleEnter(WINDOW *game_win, char *playWord) {
+void handleEnter(WINDOW *game_win, char *playWord, char words[][S_WORD_LEN]) {
   int x, y;
   chtype ch;
   getyx(game_win, y, x);
@@ -115,6 +116,16 @@ void handleEnter(WINDOW *game_win, char *playWord) {
     gameEnd(game_win); // TODO
     return;
   }
+
+  char guess[S_WORD_LEN];
+  getGuess(game_win, guess);
+  if (!isValidGuess(words, guess)) {
+    clearConfirmMsg(game_win, y);
+    mvwprintw(game_win, y, CONFIRM_START, INVALID_MSG);
+    wmove(game_win, y, x);
+    return;
+  }
+
   colorLetters(game_win, playWord);
   clearConfirmMsg(game_win, y);
   mvwprintw(game_win, y, POINTER_COL, " ");
@@ -159,15 +170,39 @@ void clearConfirmMsg(WINDOW *game_win, int y) {
   free(clearMsg);
 }
 
+void getGuess(WINDOW *game_win, char *guess) {
+  int x, y;
+  getyx(game_win, y, x);
+  for (int col = START_COL, idx = 0; col <= END_COL; col += 2, idx++) {
+    int ch = mvwinch(game_win, y, col);
+    guess[idx] = ch;
+  }
+}
+
+bool isValidGuess(char words[][S_WORD_LEN], char *guess) {
+  int left = 0, right = WORD_COUNT, mid;
+  int cmp;
+
+  while (left <= right) {
+    mid = (right - left) / 2 + left;
+    cmp = strcmp(guess, words[mid]);
+    if (cmp < 0) {
+      right = mid - 1;
+    } else if (cmp > 0) {
+      left = mid + 1;
+    } else {
+      return true;
+    }
+  }
+  return false;
+}
+
 void colorLetters(WINDOW *game_win, char *playWord) {
-  // need the playWord
-  // get typed word
-  // reject non-valid word (do last)
-  // color letters accordingly
+  // FIX: could maybe optimize
   int x, y;
   getyx(game_win, y, x);
 
-  char letters[WORD_LENGTH + 1];
+  char letters[S_WORD_LEN];
   strcpy(letters, playWord);
 
   for (int col = START_COL, idx = 0; col <= END_COL; col += 2, idx++) {

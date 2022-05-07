@@ -4,6 +4,7 @@
 
 #define WORD_COUNT 659
 #define WORD_LENGTH 5
+#define S_WORD_LEN WORD_LENGTH + 1
 
 #define GUESS_COUNT 6
 #define X_SPACING 2
@@ -21,6 +22,7 @@
 
 #define CONFIRM_START END_COL + 5
 #define CONFIRM_MSG "press <enter> to confirm"
+#define INVALID_MSG "invalid guess, try again"
 
 #define C_INTRO 1
 #define C_QUIT 2
@@ -65,15 +67,18 @@
     └───────────────────────────────────────┘
 */
 
-void getPlayWord(char words[WORD_COUNT][WORD_LENGTH + 1], char *playWord);
+void getPlayWord(char words[][S_WORD_LEN], char *playWord);
 WINDOW *initBoard();
 
 // input handlers
 void handleArrows(WINDOW *game_win, chtype direction);
-void handleEnter(WINDOW *game_win, char *playWord);
+void handleEnter(WINDOW *game_win, char *playWord, char words[][S_WORD_LEN]);
 void handleBackspace(WINDOW *game_win);
 void handleLetters(WINDOW *game_win, chtype ch);
 void clearConfirmMsg(WINDOW *game_win, int y);
+
+void getGuess(WINDOW *game_win, char *guess);
+bool isValidGuess(char words[][S_WORD_LEN], char *guess);
 
 // wordle logic
 void colorLetters(WINDOW *game_win, char *playWord);
