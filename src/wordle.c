@@ -48,6 +48,8 @@ GameData *initGame() {
     perror("Error allocating game data memory");
     exit(-1);
   }
+  gameData->guessCount = 0;
+  memset(gameData->guessColors, WRONG, sizeof(gameData->guessColors));
 
   srand(time(0));
   int wordLine = rand() % WORD_COUNT;
@@ -119,18 +121,18 @@ void handleEnter(WINDOW *game_win, GameData *gameData) {
   if (mvwinch(game_win, y, CONFIRM_START) != 'p') // FIX: enter is being registered
     return;
 
-  char guess[S_WORD_LEN];
-  getGuess(game_win, guess);
-  if (!isValidGuess(gameData->allWords, guess)) {
+  getGuess(game_win, gameData->currGuess);
+  if (!isValidGuess(gameData)) {
     clearConfirmMsg(game_win, y);
     mvwprintw(game_win, y, CONFIRM_START, INVALID_MSG);
     wmove(game_win, y, x);
     return;
   }
 
-  colorLetters(game_win, gameData->playWord);
+  gameData->guessCount++;
+  colorLetters(game_win, gameData);
   clearConfirmMsg(game_win, y);
-  if (y == END_ROW || strcmp(guess, gameData->playWord) == 0) {
+  if (y == END_ROW || strcmp(gameData->currGuess, gameData->playWord) == 0) {
     gameEnd(game_win); // TODO
     return;
   }
@@ -185,13 +187,13 @@ void getGuess(WINDOW *game_win, char *guess) {
   }
 }
 
-bool isValidGuess(char words[][S_WORD_LEN], char *guess) {
+bool isValidGuess(GameData *gameData) {
   int left = 0, right = WORD_COUNT, mid;
   int cmp;
 
   while (left <= right) {
     mid = (right - left) / 2 + left;
-    cmp = strcmp(guess, words[mid]);
+    cmp = strcmp(gameData->currGuess, gameData->allWords[mid]);
     if (cmp < 0) {
       right = mid - 1;
     } else if (cmp > 0) {
@@ -203,32 +205,34 @@ bool isValidGuess(char words[][S_WORD_LEN], char *guess) {
   return false;
 }
 
-void colorLetters(WINDOW *game_win, char *playWord) {
+void colorLetters(WINDOW *game_win, GameData *gameData) {
   // FIX: could maybe optimize
   int x, y;
   getyx(game_win, y, x);
 
   char letters[S_WORD_LEN];
-  strcpy(letters, playWord);
+  strcpy(letters, gameData->playWord);
 
   for (int col = START_COL, idx = 0; col <= END_COL; col += 2, idx++) {
     chtype ch = mvwinch(game_win, y, col);
-    if (playWord[idx] == ch) {
+    if (gameData->playWord[idx] == ch) {
       letters[idx] = 0;
       wattron(game_win, COLOR_PAIR(C_CORRECT));
       mvwprintw(game_win, y, col, "%c", ch);
       wattroff(game_win, COLOR_PAIR(C_CORRECT));
+      gameData->guessColors[gameData->guessCount][idx] = C_CORRECT;
     }
   }
   for (int col = START_COL, idx = 0; col <= END_COL; col += 2, idx++) {
     chtype ch = mvwinch(game_win, y, col);
-    if (playWord[idx] != ch) {
+    if (gameData->playWord[idx] != ch) {
       for (int i = 0; i < WORD_LENGTH; ++i) {
         if (ch == letters[i]) {
           letters[i] = 0;
           wattron(game_win, COLOR_PAIR(C_CLOSE));
           mvwprintw(game_win, y, col, "%c", ch);
           wattroff(game_win, COLOR_PAIR(C_CLOSE));
+          gameData->guessColors[gameData->guessCount][idx] = C_CLOSE;
         }
       }
     }

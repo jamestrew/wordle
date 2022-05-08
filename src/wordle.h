@@ -40,8 +40,9 @@ typedef enum {
 typedef struct {
   char playWord[S_WORD_LEN];
   char allWords[WORD_COUNT][S_WORD_LEN];
-  char guessWord[S_WORD_LEN];
-  guess_t guesses[GUESS_COUNT][S_WORD_LEN];
+  char currGuess[S_WORD_LEN];
+  guess_t guessColors[GUESS_COUNT][S_WORD_LEN];
+  int guessCount;
 } GameData;
 
 GameData *initGame();
@@ -55,10 +56,10 @@ void handleLetters(WINDOW *game_win, chtype ch);
 void clearConfirmMsg(WINDOW *game_win, int y);
 
 void getGuess(WINDOW *game_win, char *guess);
-bool isValidGuess(char words[][S_WORD_LEN], char *guess);
+bool isValidGuess(GameData *gameData);
 
 // wordle logic
-void colorLetters(WINDOW *game_win, char *playWord);
+void colorLetters(WINDOW *game_win, GameData *gameData);
 void gameEnd(WINDOW *game_win);
 
 // dev tools
