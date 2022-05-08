@@ -121,11 +121,11 @@ void handleArrows(WINDOW *game_win, chtype direction) {
 
 void handleEnter(WINDOW *game_win, GameData *gameData) {
   int x, y;
-  chtype ch;
   getyx(game_win, y, x);
-  // FIX: enter is being registered
-  if (mvwinch(game_win, y, CONFIRM_START) != 'p')
+  if (mvwinch(game_win, y, CONFIRM_START) != 'p') {
+    wmove(game_win, y, x);
     return;
+  }
 
   getGuess(game_win, gameData->currGuess);
   if (!isValidGuess(gameData)) {
@@ -278,7 +278,6 @@ void debugCursor(WINDOW *game_win, chtype ch, char *playWord) {
   else
     sprintf(input, "%c", ch);
 
-  // TODO: kinda wanna add some padding - rending kinda broken
   mvprintw(BOARD_HEIGHT + 2, 0, "%s", playWord);
   mvprintw(BOARD_HEIGHT + 3, 0, "(%s - %d) (%d,%d)", input, ch, x, y);
   wmove(game_win, y, x);
