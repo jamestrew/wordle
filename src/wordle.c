@@ -8,11 +8,8 @@
 #include "wordle.h"
 
 int main() {
-  char words[WORD_COUNT][S_WORD_LEN];
-  char playWord[S_WORD_LEN];
-  getPlayWord(words, playWord);
-
   initscr();
+  GameData *gameData = initGame();
   WINDOW *game_win = initBoard();
 
   chtype ch;
@@ -28,23 +25,30 @@ int main() {
       handleBackspace(game_win);
       break;
     case 10:
-      handleEnter(game_win, playWord, words);
+      handleEnter(game_win, gameData);
       break;
     default:
       handleLetters(game_win, ch);
     }
 
 #ifdef DEBUG
-    debugCursor(game_win, ch, playWord);
+    debugCursor(game_win, ch, gameData->playWord);
 #endif
     wrefresh(game_win);
   } while ((ch = getch()) != KEY_F(1));
 
+  free(gameData);
   delwin(game_win);
   endwin();
 }
 
-void getPlayWord(char words[][S_WORD_LEN], char *playWord) {
+GameData *initGame() {
+  GameData *gameData = malloc(sizeof(GameData));
+  if (gameData == NULL) {
+    perror("Error allocating game data memory");
+    exit(-1);
+  }
+
   srand(time(0));
   int wordLine = rand() % WORD_COUNT;
 
@@ -59,11 +63,13 @@ void getPlayWord(char words[][S_WORD_LEN], char *playWord) {
   char word[WORD_LENGTH + 2];
   while (fgets(word, WORD_LENGTH + 2, fp) != NULL || line <= WORD_COUNT) {
     word[WORD_LENGTH] = '\0';
-    strcpy(words[line], word);
+    strcpy(gameData->allWords[line], word);
     line++;
   }
   fclose(fp);
-  strcpy(playWord, words[wordLine]);
+  strcpy(gameData->playWord, gameData->allWords[wordLine]);
+
+  return gameData;
 }
 
 WINDOW *initBoard() {
@@ -106,28 +112,28 @@ void handleArrows(WINDOW *game_win, chtype direction) {
     wmove(game_win, y, x - X_SPACING);
 }
 
-void handleEnter(WINDOW *game_win, char *playWord, char words[][S_WORD_LEN]) {
+void handleEnter(WINDOW *game_win, GameData *gameData) {
   int x, y;
   chtype ch;
   getyx(game_win, y, x);
-  if (mvwinch(game_win, y, CONFIRM_START) != 'p')
+  if (mvwinch(game_win, y, CONFIRM_START) != 'p') // FIX: enter is being registered
     return;
-  if (y == END_ROW) {
-    gameEnd(game_win); // TODO
-    return;
-  }
 
   char guess[S_WORD_LEN];
   getGuess(game_win, guess);
-  if (!isValidGuess(words, guess)) {
+  if (!isValidGuess(gameData->allWords, guess)) {
     clearConfirmMsg(game_win, y);
     mvwprintw(game_win, y, CONFIRM_START, INVALID_MSG);
     wmove(game_win, y, x);
     return;
   }
 
-  colorLetters(game_win, playWord);
+  colorLetters(game_win, gameData->playWord);
   clearConfirmMsg(game_win, y);
+  if (y == END_ROW || strcmp(guess, gameData->playWord) == 0) {
+    gameEnd(game_win); // TODO
+    return;
+  }
   mvwprintw(game_win, y, POINTER_COL, " ");
   mvwprintw(game_win, y + Y_SPACING, POINTER_COL, POINTER);
   wmove(game_win, y + Y_SPACING, START_COL);

@@ -31,48 +31,25 @@
 #define C_WRONG 5
 #define COLOR_GREY 69
 
-/* TODO:
-   [x] get random word
-   [x] create basic play board
-   [x] create input handling
-   [ ] do the letter coloring
-   [ ] do the wordle colorful thing
+typedef enum {
+  CORRECT = C_CORRECT,
+  CLOSE = C_CLOSE,
+  WRONG = C_WRONG,
+} guess_t;
 
-   - 6 letters
-   - green for correct guesses
-   - yellow for correct but wrong positions
-   - repeats aren't additinally yellow
+typedef struct {
+  char playWord[S_WORD_LEN];
+  char allWords[WORD_COUNT][S_WORD_LEN];
+  char guessWord[S_WORD_LEN];
+  guess_t guesses[GUESS_COUNT][S_WORD_LEN];
+} GameData;
 
-   - black bg
-    ┌───────────────────────────────────────┐
-    │                                       │
-    │ENTER GUESS:                           │
-    │                                       │
-    │> A A A A A   press enter to confirm   │
-    │                                       │
-    │                                       │
-    │                                       │
-    │                                       │
-    │                                       │
-    │                                       │
-    │                                       │
-    │                                       │
-    │                                       │
-    │                                       │
-    │                                       │
-    │                                       │
-    │                                       │
-    │                                       │
-    │                                       │
-    └───────────────────────────────────────┘
-*/
-
-void getPlayWord(char words[][S_WORD_LEN], char *playWord);
+GameData *initGame();
 WINDOW *initBoard();
 
 // input handlers
 void handleArrows(WINDOW *game_win, chtype direction);
-void handleEnter(WINDOW *game_win, char *playWord, char words[][S_WORD_LEN]);
+void handleEnter(WINDOW *game_win, GameData *gameData);
 void handleBackspace(WINDOW *game_win);
 void handleLetters(WINDOW *game_win, chtype ch);
 void clearConfirmMsg(WINDOW *game_win, int y);
