@@ -19,6 +19,7 @@
 #define POINTER ">"
 #define END_COL START_COL + (WORD_LENGTH - 1) * X_SPACING
 #define END_ROW START_ROW + (GUESS_COUNT - 1) * Y_SPACING
+#define END_MSG_ROW 15
 
 #define CONFIRM_START END_COL + 5
 #define CONFIRM_MSG "press <enter> to confirm"
@@ -29,7 +30,7 @@
 #define C_CORRECT 3
 #define C_CLOSE 4
 #define C_WRONG 5
-#define COLOR_GREY 69
+#define COLOR_GREY 8
 
 typedef enum {
   CORRECT = C_CORRECT,
@@ -41,7 +42,7 @@ typedef struct {
   char playWord[S_WORD_LEN];
   char allWords[WORD_COUNT][S_WORD_LEN];
   char currGuess[S_WORD_LEN];
-  guess_t guessColors[GUESS_COUNT][S_WORD_LEN];
+  guess_t guessColors[GUESS_COUNT][WORD_LENGTH];
   int guessCount;
 } GameData;
 
@@ -60,7 +61,7 @@ bool isValidGuess(GameData *gameData);
 
 // wordle logic
 void colorLetters(WINDOW *game_win, GameData *gameData);
-void gameEnd(WINDOW *game_win);
+void gameEnd(WINDOW *game_win, GameData *gameData);
 
 // dev tools
 void debugCursor(WINDOW *game_win, chtype ch, char *playWord);

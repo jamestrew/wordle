@@ -1,3 +1,4 @@
+#include <locale.h>
 #include <ncurses.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -8,6 +9,7 @@
 #include "wordle.h"
 
 int main() {
+  setlocale(LC_CTYPE, "");
   initscr();
   GameData *gameData = initGame();
   WINDOW *game_win = initBoard();
@@ -50,7 +52,9 @@ GameData *initGame() {
     exit(-1);
   }
   gameData->guessCount = 0;
-  memset(gameData->guessColors, WRONG, sizeof(gameData->guessColors));
+  for (int i = 0; i < GUESS_COUNT; ++i)
+    for (int j = 0; j < WORD_LENGTH; ++j)
+      gameData->guessColors[i][j] = WRONG;
 
   srand(time(0));
   int wordLine = rand() % WORD_COUNT;
@@ -119,7 +123,8 @@ void handleEnter(WINDOW *game_win, GameData *gameData) {
   int x, y;
   chtype ch;
   getyx(game_win, y, x);
-  if (mvwinch(game_win, y, CONFIRM_START) != 'p') // FIX: enter is being registered
+  // FIX: enter is being registered
+  if (mvwinch(game_win, y, CONFIRM_START) != 'p')
     return;
 
   getGuess(game_win, gameData->currGuess);
@@ -130,16 +135,16 @@ void handleEnter(WINDOW *game_win, GameData *gameData) {
     return;
   }
 
-  gameData->guessCount++;
   colorLetters(game_win, gameData);
   clearConfirmMsg(game_win, y);
   if (y == END_ROW || strcmp(gameData->currGuess, gameData->playWord) == 0) {
-    gameEnd(game_win); // TODO
+    gameEnd(game_win, gameData);
     return;
   }
   mvwprintw(game_win, y, POINTER_COL, " ");
   mvwprintw(game_win, y + Y_SPACING, POINTER_COL, POINTER);
   wmove(game_win, y + Y_SPACING, START_COL);
+  gameData->guessCount++;
 }
 
 void handleBackspace(WINDOW *game_win) {
@@ -240,7 +245,29 @@ void colorLetters(WINDOW *game_win, GameData *gameData) {
   }
 }
 
-void gameEnd(WINDOW *game_win) {}
+void gameEnd(WINDOW *game_win, GameData *gameData) {
+  int yOffset = 0;
+  for (int row = 0; row <= gameData->guessCount; ++row) {
+    int xOffset = 0;
+    for (int col = 0; col < WORD_LENGTH; ++col) {
+      int color = gameData->guessColors[row][col];
+      wattron(game_win, COLOR_PAIR(color));
+      mvwprintw(game_win, END_MSG_ROW + yOffset, col + xOffset + 3, "%s", "██");
+      wattroff(game_win, COLOR_PAIR(color));
+      xOffset++;
+    }
+    yOffset++;
+  }
+
+  int x, y;
+  getyx(game_win, y, x);
+
+  if (strcmp(gameData->playWord, gameData->currGuess) == 0) {
+    mvwprintw(game_win, y + 1, 3, "Guessed in %d tries", ++gameData->guessCount);
+  } else {
+    mvwprintw(game_win, y + 1, 3, "\n   You lose. The word was: %s", gameData->playWord);
+  }
+}
 
 void debugCursor(WINDOW *game_win, chtype ch, char *playWord) {
   int x, y;
