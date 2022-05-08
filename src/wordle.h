@@ -64,5 +64,6 @@ void gameEnd(WINDOW *game_win);
 
 // dev tools
 void debugCursor(WINDOW *game_win, chtype ch, char *playWord);
+void debugGuesses(WINDOW *game_win, GameData *gameData);
 
 #endif

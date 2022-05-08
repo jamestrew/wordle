@@ -33,6 +33,7 @@ int main() {
 
 #ifdef DEBUG
     debugCursor(game_win, ch, gameData->playWord);
+    debugGuesses(game_win, gameData);
 #endif
     wrefresh(game_win);
   } while ((ch = getch()) != KEY_F(1));
@@ -244,8 +245,31 @@ void gameEnd(WINDOW *game_win) {}
 void debugCursor(WINDOW *game_win, chtype ch, char *playWord) {
   int x, y;
   getyx(game_win, y, x);
+  char input[5];
+  if (ch == 10)
+    strcpy(input, "<CR>");
+  else
+    sprintf(input, "%c", ch);
+
   // TODO: kinda wanna add some padding - rending kinda broken
-  mvwprintw(game_win, BOARD_HEIGHT - 2, BOARD_WIDTH - 7, "(%c)%d,%d", ch, x, y);
-  mvwprintw(game_win, 1, 13, " %s", playWord);
+  mvprintw(BOARD_HEIGHT + 2, 0, "%s", playWord);
+  mvprintw(BOARD_HEIGHT + 3, 0, "(%s - %d) (%d,%d)", input, ch, x, y);
+  wmove(game_win, y, x);
+}
+
+void debugGuesses(WINDOW *game_win, GameData *gameData) {
+  int x, y;
+  getyx(game_win, y, x);
+
+  int offset = 0;
+  for (int row = 0; row < GUESS_COUNT; ++row) {
+    int coloffset = 0;
+    for (int col = 0; col < WORD_LENGTH; ++col) {
+      int color = gameData->guessColors[row][col];
+      mvprintw(row + 30 + offset, col + coloffset + 3, "%d", color);
+      coloffset++;
+    }
+    offset++;
+  }
   wmove(game_win, y, x);
 }
